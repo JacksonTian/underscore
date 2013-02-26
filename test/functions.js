@@ -18,10 +18,10 @@ $(document).ready(function() {
     func = _.bind(func, this, 'hello');
     equal(func('moe'), 'hello: moe', 'the function was partially applied in advance');
 
-    var func = _.bind(func, this, 'curly');
+    func = _.bind(func, this, 'curly');
     equal(func(), 'hello: curly', 'the function was completely applied in advance');
 
-    var func = function(salutation, firstname, lastname) { return salutation + ': ' + firstname + ' ' + lastname; };
+    func = function(salutation, firstname, lastname) { return salutation + ': ' + firstname + ' ' + lastname; };
     func = _.bind(func, this, 'hello', 'moe', 'curly');
     equal(func(), 'hello: moe curly', 'the function was partially applied in advance and can accept multiple arguments');
 
@@ -38,6 +38,14 @@ $(document).ready(function() {
     equal(newBoundf.hello, undefined, "function should not be bound to the context, to comply with ECMAScript 5");
     equal(Boundf().hello, "moe curly", "When called without the new operator, it's OK to be bound to the context");
     ok(newBoundf instanceof F, "a bound instance is an instance of the original function");
+  });
+
+  test("partial", function() {
+    var obj = {name: 'moe'};
+    var func = function() { return this.name + ' ' + _.toArray(arguments).join(' '); };
+
+    obj.func = _.partial(func, 'a', 'b');
+    equal(obj.func('c', 'd'), 'moe a b c d', 'can partially apply');
   });
 
   test("bindAll", function() {
@@ -58,9 +66,12 @@ $(document).ready(function() {
       getName : function() { return 'name: ' + this.name; },
       sayHi   : function() { return 'hi: ' + this.name; }
     };
-    _.bindAll(moe);
+
+    raises(function() { _.bindAll(moe); }, Error, 'throws an error for bindAll with no functions named');
+
+    _.bindAll(moe, 'sayHi');
     curly.sayHi = moe.sayHi;
-    equal(curly.sayHi(), 'hi: moe', 'calling bindAll with no arguments binds all functions to the object');
+    equal(curly.sayHi(), 'hi: moe');
   });
 
   test("memoize", function() {

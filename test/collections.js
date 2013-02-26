@@ -260,6 +260,14 @@ $(document).ready(function() {
     equal(result[0].a, 1);
   });
 
+  test('findWhere', function() {
+    var list = [{a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}, {a: 1, b: 4}, {a: 2, b: 4}];
+    var result = _.findWhere(list, {a: 1});
+    deepEqual(result, {a: 1, b: 2});
+    result = _.findWhere(list, {b: 4});
+    deepEqual(result, {a: 1, b: 4});
+  });
+
   test('max', function() {
     equal(3, _.max([1, 2, 3]), 'can perform a regular Math.max');
 
@@ -353,6 +361,14 @@ $(document).ready(function() {
     var grouped = _.groupBy(array);
     equal(grouped['1'].length, 2);
     equal(grouped['3'].length, 1);
+
+    var matrix = [
+      [1,2],
+      [1,3],
+      [2,3]
+    ];
+    deepEqual(_.groupBy(matrix, 0), {1: [[1,2], [1,3]], 2: [[2,3]]})
+    deepEqual(_.groupBy(matrix, 1), {2: [[1,2]], 3: [[1,3], [2,3]]})
   });
 
   test('countBy', function() {
@@ -430,6 +446,7 @@ $(document).ready(function() {
   test('size', function() {
     equal(_.size({one : 1, two : 2, three : 3}), 3, 'can compute the size of an object');
     equal(_.size([1, 2, 3]), 3, 'can compute the size of an array');
+    equal(_.size($('<div>').add('<span>').add('<span>')), 3, 'can compute the size of jQuery objects');
 
     var func = function() {
       return _.size(arguments);
@@ -437,7 +454,8 @@ $(document).ready(function() {
 
     equal(func(1, 2, 3, 4), 4, 'can test the size of the arguments object');
 
-    equal(_.size('hello'), 5, 'can compute the size of a string');
+    equal(_.size('hello'), 5, 'can compute the size of a string literal');
+    equal(_.size(new String('hello')), 5, 'can compute the size of string object');
 
     equal(_.size(null), 0, 'handles nulls');
   });
